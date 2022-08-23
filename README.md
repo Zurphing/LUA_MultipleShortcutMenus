@@ -1,3 +1,5 @@
+Credits to TopazTK for major script rewrites. Credits to KSX, Num, & DA for offsets, & to Denhonator for the autosave script which was used as a reference for reading/writing files via Lua.
+
 # LUA_MutlipleShortcutMenus
 Provides access to 5 different shortcut menus that are customizable in-game, using L3/R3 to cycle up/down, or L1+D-pad direction &amp; L1+L2.
 
