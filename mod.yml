@@ -1,0 +1,8 @@
+title: Multiple Shortcut Menus (1.31)
+originalAuthor: Zurphing
+description: Create 5 different shortcut menus in-game by setting your shortcuts in the Customize Menu, & pressing L3 or R3 to scroll to the next menu. Access these shortcut menus in-game by pressing L3 or R3 while holding down the shortcut button, or using L1+D-Pad direction & L1+L2 for more direct access.
+assets:
+- name: scripts/MultipleShortcutMenus1.31.lua
+  method: copy
+  source:
+  - name: MultipleShortcutMenus1.31.lua
