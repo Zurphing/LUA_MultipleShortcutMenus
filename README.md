@@ -1,5 +1,5 @@
 # LUA_MutlipleShortcutMenus
-Provides access to 6 different shortcut menus that are customizable in-game, using L3/R3 to cycle up/down, or L1+D-pad direction &amp; L1+L2.
+Provides access to 5 different shortcut menus that are customizable in-game, using L3/R3 to cycle up/down, or L1+D-pad direction &amp; L1+L2.
 
 Writing/Using A Shortcut Menu:
 Button combos are listed in the Pause menu, and will change to reflect the current controller detected. (May not work in Enemy/Boss Rando)
