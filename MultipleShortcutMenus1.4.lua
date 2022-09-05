@@ -8,9 +8,42 @@ local bounceBool = false
 local TextCheck = false
 local SysBarBase = 0x255ED11 --This is the part we edit. The "IZE" part.
 local FormCheck = 0x0446086
+
+local ShortListFilterINST = 0x349718 - 0x56454E;
+local ShortEquipFilterINST = 0x3C1A46 - 0x56454E;
+local ShortCategoryFilterINST = 0x35924F - 0x56454E;
+local ShortIconAssignINST = 0x2E99CA - 0x56454E;
+
+local ShortIcon = 0x02 -- Change this for Rando use.
+
 function _OnInit()
 	if GAME_ID == 0x431219CC and ENGINE_TYPE == "BACKEND" then
 		ConsolePrint("Customize 5 shortcut menus using R3/L3 while in the pause menu. Access those shortcut menus using L1 + R3 / L3 to scroll between them, or L1+D-pad/L1+R2 in-game.")
+		
+		-- Shortucttable Forms ASM Override!
+		if ReadByte(ShortCategoryFilterINST) ~= 0x90 then
+			-- Show Forms on the Shortcut Menu.
+			WriteArray(ShortListFilterINST, { 0xEB, 0x4E, 0x90, 0x90 })
+			WriteArray(ShortListFilterINST + 0x50, { 0x81, 0xCB, 0x00, 0x00, 0x24, 0x00 })
+			WriteArray(ShortListFilterINST + 0x56, { 0xEB, 0xAA })
+			
+			-- Allow Forms to be shortcutted.
+			WriteArray(ShortEquipFilterINST, { 0xEB, 0x1B, 0x90, 0x90, 0x90, 0x90, 0x90 })
+			WriteArray(ShortEquipFilterINST + 0x1D, { 0x80, 0xF9, 0x15, 0x74, 0xF2 })
+			WriteArray(ShortEquipFilterINST + 0x22, { 0x31, 0xC0, 0x48, 0x83, 0xC4, 0x28, 0xC3 })
+
+			-- Magic Reassignment Fix.
+			WriteArray(ShortCategoryFilterINST, { 0x90, 0x90 })
+
+			-- Icon Reassignment Read.
+			local iconRead = ReadArray(ShortIconAssignINST + 0x03, 0x19)
+
+			-- Icon Reassignment Fix.
+			WriteArray(ShortIconAssignINST, { 0xEB, 0x19 })
+			WriteArray(ShortIconAssignINST + 0x02, iconRead)
+			WriteArray(ShortIconAssignINST + 0x1B, { 0x3C, 0x0B, 0x75, 0x02, 0xB0, ShortIcon, 0x88, 0x47, 0x01 })
+		end
+
 		canExecute = true
 	else
 		ConsolePrint("MultiShortcutMenu Install: failed.")
