@@ -8,42 +8,9 @@ local bounceBool = false
 local TextCheck = false
 local SysBarBase = 0x255ED11 --This is the part we edit. The "IZE" part.
 local FormCheck = 0x0446086
-
-local ShortListFilterINST = 0x349718 - 0x56454E;
-local ShortEquipFilterINST = 0x3C1A46 - 0x56454E;
-local ShortCategoryFilterINST = 0x35924F - 0x56454E;
-local ShortIconAssignINST = 0x2E99CA - 0x56454E;
-
-local ShortIcon = 0x02 -- Change this for Rando use.
-
 function _OnInit()
 	if GAME_ID == 0x431219CC and ENGINE_TYPE == "BACKEND" then
 		ConsolePrint("Customize 5 shortcut menus using R3/L3 while in the pause menu. Access those shortcut menus using L1 + R3 / L3 to scroll between them, or L1+D-pad/L1+R2 in-game.")
-		
-		-- Shortucttable Forms ASM Override!
-		if ReadByte(ShortCategoryFilterINST) ~= 0x90 then
-			-- Show Forms on the Shortcut Menu.
-			WriteArray(ShortListFilterINST, { 0xEB, 0x4E, 0x90, 0x90 })
-			WriteArray(ShortListFilterINST + 0x50, { 0x81, 0xCB, 0x00, 0x00, 0x24, 0x00 })
-			WriteArray(ShortListFilterINST + 0x56, { 0xEB, 0xAA })
-			
-			-- Allow Forms to be shortcutted.
-			WriteArray(ShortEquipFilterINST, { 0xEB, 0x1B, 0x90, 0x90, 0x90, 0x90, 0x90 })
-			WriteArray(ShortEquipFilterINST + 0x1D, { 0x80, 0xF9, 0x15, 0x74, 0xF2 })
-			WriteArray(ShortEquipFilterINST + 0x22, { 0x31, 0xC0, 0x48, 0x83, 0xC4, 0x28, 0xC3 })
-
-			-- Magic Reassignment Fix.
-			WriteArray(ShortCategoryFilterINST, { 0x90, 0x90 })
-
-			-- Icon Reassignment Read.
-			local iconRead = ReadArray(ShortIconAssignINST + 0x03, 0x19)
-
-			-- Icon Reassignment Fix.
-			WriteArray(ShortIconAssignINST, { 0xEB, 0x19 })
-			WriteArray(ShortIconAssignINST + 0x02, iconRead)
-			WriteArray(ShortIconAssignINST + 0x1B, { 0x3C, 0x0B, 0x75, 0x02, 0xB0, ShortIcon, 0x88, 0x47, 0x01, 0xEB, 0xDC })
-		end
-
 		canExecute = true
 	else
 		ConsolePrint("MultiShortcutMenu Install: failed.")
@@ -103,41 +70,42 @@ function _OnFrame()
 				WriteByte(SaveData, 0x4)
 			end
 		end
-		if ReadByte(SysBarBase-1) == 0xA6 then --Checks the byte RIGHT BEFORE where we edit in Customize. This prevents errors with the script upon refreshing, as the byte we changed would be different.
-			CustomTXT = 0x255ED11 --Base KH2 SysBar
-			TextCheck = true
-		elseif ReadByte(SysBarBase-1) == 0x00 then --Compares same sys.bar offset across different sys.bars.
-			CustomTXT = 0x255D625 --GoA ROM
-			TextCheck = true
-		elseif ReadByte(SysBarBase-1) == 0x9E then 
-			CustomTXT = 0x255E915 --Double Plus SysBar
-			TextCheck = true
-		elseif ReadByte(SysBarBase-1) == 0x01 then
-			CustomTXT = 0x255D625 --SMT Spell Names + GoA ROM SysBar
-			TextCheck = true 
-		end
-	if TextCheck == true then 
-		if ReadByte(CustomTXT+1) ~= 0x0A then 
-			WriteArray(CustomTXT+1, {0x0A, 0x0B, 0x09, 0xE0, 0x0B, 0x50, 0x2B, 0x09}) --Initial write. These values stay constant and only need to be written once.
-		elseif _readMenu == 0 and ReadByte(CustomTXT) ~= 0x91 then --Change text. 2nd check ensures it isn't written every single frame.
-			WriteByte(CustomTXT, 0x91)
-			WriteByte(CustomTXT+0x9, 0xEE)
-			--Replaces the Option string in-game, to allow for the dynamic button prompts. 
-		elseif _readMenu == 1 and ReadByte(CustomTXT) ~= 0x92 then
-			WriteByte(CustomTXT, 0x92)
-			WriteByte(CustomTXT+0x9, 0xF1)
-		elseif _readMenu == 2 and ReadByte(CustomTXT) ~= 0x93 then
-			WriteByte(CustomTXT, 0x93)
-			WriteByte(CustomTXT+0x9, 0xEF)
-		elseif _readMenu == 3 and ReadByte(CustomTXT) ~= 0x94 then
-			WriteByte(CustomTXT, 0x94)
-			WriteByte(CustomTXT+0x9, 0xF0)
-		elseif _readMenu == 4 and ReadByte(CustomTXT) ~= 0x95 then
-			WriteByte(CustomTXT, 0x95)
-			WriteByte(CustomTXT+0x9, 0xE3)
-		end
-		end		
-	end
+--New Text-Swap Method. Maintains compatibility even when using mods that change text. Probably won't work for mods that add strings, though.
+CustomSYSBarID = 0x2557B2A --Customize ID. Offset is 4 bytes after
+if ReadShort(CustomSYSBarID) == 1105 then --Base Game Method
+	CustomTXT = 0x255DA39 --Write text here
+	ZZ0StringOffset = 0x68F0 --Use this text string instead
+	CustomSYSBarOffset = 0x2557B2E --Where to change Customizes' Text Offset. Point to ZZ0s now.
+	WriteShort(CustomSYSBarOffset, ZZ0StringOffset)
+elseif ReadShort(CustomSYSBarID) == 1258 then --GoA ROM Method
+	CustomTXT = 0x255D581
+	ZZ0StringOffset = 0x68F8
+	CustomSYSBarOffset = 0x255766E
+	WriteShort(CustomSYSBarOffset, ZZ0StringOffset)
+end
+
+
+	if _readMenu == 0 and ReadByte(CustomTXT) ~= 0x91 then --Change text. 2nd check ensures it isn't written every single frame.
+		ConsolePrint(CustomTXT)
+		WriteByte(CustomTXT, 0x91)
+		WriteByte(CustomTXT+0x9, 0xEE)
+	elseif _readMenu == 1 and ReadByte(CustomTXT) ~= 0x92 then
+		WriteByte(CustomTXT, 0x92)
+		WriteByte(CustomTXT+0x9, 0xF1)
+	elseif _readMenu == 2 and ReadByte(CustomTXT) ~= 0x93 then
+		WriteByte(CustomTXT, 0x93)
+		WriteByte(CustomTXT+0x9, 0xEF)
+	elseif _readMenu == 3 and ReadByte(CustomTXT) ~= 0x94 then
+		WriteByte(CustomTXT, 0x94)
+		WriteByte(CustomTXT+0x9, 0xF0)
+	elseif _readMenu == 4 and ReadByte(CustomTXT) ~= 0x95 then
+		WriteByte(CustomTXT, 0x95)
+		WriteByte(CustomTXT+0x9, 0xE3)
+	--end
+	end		
+	
+	
+end
 --Saving/Loading Presets.
 		if _readFlag == 0x03 then
 			if ReadInt(ReadInput) == 0x0F01 then
@@ -174,7 +142,7 @@ function UpdateMagic()
 		if ReadByte(CheckingSave) == 49 and ReadByte(FireTier) == 3 or ReadByte(CheckingSave) == 119 and ReadByte(FireTier) == 3 then
 			WriteByte(CheckingSave, 0x78)
 		end
-		--Update Blizzard to Blizzara (BLIZZARD AND THUNDER ARE SWAPPED AHHHHH)
+		--Update Blizzard to Blizzara (BLIZZARD AND THUNDER ARE SWAPPED)
 		if ReadByte(CheckingSave) == 51 and ReadByte(BlizzTier) == 2 then
 			WriteByte(CheckingSave, 0x79)
 		end
@@ -218,6 +186,38 @@ function UpdateMagic()
 
 	end
 end
+
+function TextChanges()
+CustomizeSysBarOffset = 0x2557B2E --Points to where "Customize" string grabs its text from
+ZZ0StringOffset = 0x68F0 --ZZ0 Unused Map Name -> Now Custom01 L1+Up. Should work even when using mods that change text.
+WriteShort(CustomizeSysBarOffset, ZZ0StringOffset)
+CustomTXT = 0x255DA39 --ZZ0 Text String Location
+--SaveData = 0x450B62
+	--if canExecute == true  then 
+	--	if ReadByte(FormCheck) ~= 0x03 then
+	--	_readMenu = ReadByte(SaveData)
+
+	if _readMenu == 0 and ReadByte(CustomTXT) ~= 0x91 then --Change text. 2nd check ensures it isn't written every single frame.
+		WriteByte(CustomTXT, 0x91)
+		WriteByte(CustomTXT+0x9, 0xEE)
+		--Replaces the Option string in-game, to allow for the dynamic button prompts. 
+	elseif _readMenu == 1 and ReadByte(CustomTXT) ~= 0x92 then
+		WriteByte(CustomTXT, 0x92)
+		WriteByte(CustomTXT+0x9, 0xF1)
+	elseif _readMenu == 2 and ReadByte(CustomTXT) ~= 0x93 then
+		WriteByte(CustomTXT, 0x93)
+		WriteByte(CustomTXT+0x9, 0xEF)
+	elseif _readMenu == 3 and ReadByte(CustomTXT) ~= 0x94 then
+		WriteByte(CustomTXT, 0x94)
+		WriteByte(CustomTXT+0x9, 0xF0)
+	elseif _readMenu == 4 and ReadByte(CustomTXT) ~= 0x95 then
+		WriteByte(CustomTXT, 0x95)
+		WriteByte(CustomTXT+0x9, 0xE3)
+	--end
+	end		
+
+end --function end
+
 
 --Future updates: Rewrite & clean up code further.
 --Further compatibility with mods that edit sys.bar.
