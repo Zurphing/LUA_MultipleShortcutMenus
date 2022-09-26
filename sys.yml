@@ -1,0 +1,10 @@
+- id: 0x1BA
+  en: Custom01{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-dpad-up}
+- id: 0x1BB
+  en: Custom02{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-dpad-right}
+- id: 0x1BC
+  en: Custom03{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-dpad-down}
+- id: 0x1BD
+  en: Custom04{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-dpad-left}
+- id: 0x1BE
+  en: Custom05{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-r2}
