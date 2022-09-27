@@ -217,9 +217,13 @@ function UpdateMagic()
 		end
 		--WIP: Check shortucttable forms, if form does not exist in save and is shortcutted, remove.
 		--Check for Valor/Wisdom/Master/Final/Anti
-		--if ReadByte(FormSaveCheck) & 0x02 ~= 0x02 and ReadShort(CheckingSave) == 0x0006 or ReadByte(FormSaveCheck) & 0x04 ~= 0x04 and ReadShort(CheckingSave) == 0x0007 or ReadByte(FormSaveCheck) & 0x10 ~= 0x10 and ReadShort(CheckingSave) == 0x000C or ReadByte(FormSaveCheck) & 0x20 ~= 0x20 and ReadShort(CheckingSave) == 0x000D or ReadByte(FormSaveCheck) & 0x40 ~= 0x40 and ReadShort(CheckingSave) == 0x000B then
-		--	WriteShort(CheckingSave, 0x0000)
-		--end
+		if ReadByte(FormSaveCheck) & 0x02 ~= 0x02 and ReadShort(CheckingSave) == 0x0006 or ReadByte(FormSaveCheck) & 0x04 ~= 0x04 and ReadShort(CheckingSave) == 0x0007 or ReadByte(FormSaveCheck) & 0x10 ~= 0x10 and ReadShort(CheckingSave) == 0x000C or ReadByte(FormSaveCheck) & 0x20 ~= 0x20 and ReadShort(CheckingSave) == 0x000D or ReadByte(FormSaveCheck) & 0x40 ~= 0x40 and ReadShort(CheckingSave) == 0x000B then
+			WriteShort(CheckingSave, 0x0000)
+		end
+		--Check for Limit
+		if ReadByte(FormSaveCheck+0xA) & 0x08 ~= 0x08 and ReadShort(CheckingSave) == 0x02A1 then
+			WriteShort(CheckingSave, 0x0000)
+		end
 		CheckingSave = CheckingSave+0x02 --Update location of CheckSave
 
 	end
