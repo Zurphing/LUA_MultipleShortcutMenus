@@ -216,8 +216,9 @@ function UpdateMagic()
 			WriteByte(CheckingSave, 0xB3)
 		end
 		--WIP: Check shortucttable forms, if form does not exist in save and is shortcutted, remove.
-		--if ReadByte(FormSaveCheck) & 0x02 ~= 0x02 and ReadShort(CheckingSave) == 0x0006 then
-		--	WriteByte(CheckingSave, 0x00)
+		--Check for Valor/Wisdom/Master/Final/Anti
+		--if ReadByte(FormSaveCheck) & 0x02 ~= 0x02 and ReadShort(CheckingSave) == 0x0006 or ReadByte(FormSaveCheck) & 0x04 ~= 0x04 and ReadShort(CheckingSave) == 0x0007 or ReadByte(FormSaveCheck) & 0x10 ~= 0x10 and ReadShort(CheckingSave) == 0x000C or ReadByte(FormSaveCheck) & 0x20 ~= 0x20 and ReadShort(CheckingSave) == 0x000D or ReadByte(FormSaveCheck) & 0x40 ~= 0x40 and ReadShort(CheckingSave) == 0x000B then
+		--	WriteShort(CheckingSave, 0x0000)
 		--end
 		CheckingSave = CheckingSave+0x02 --Update location of CheckSave
 
