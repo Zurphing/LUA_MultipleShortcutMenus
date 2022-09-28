@@ -156,7 +156,7 @@ end
 end
 
 function UpdateMagic()
-	--FormSaveCheck = 0x9A70B0+0x36C0-0x56454E
+	FormSaveCheck = 0x9A70B0+0x36C0-0x56454E
 	FireTier = 0x9AA644-0x56454E --Count of Fires
 	BlizzTier = FireTier+0x1	--Count of Blizzards
 	ThunTier = BlizzTier+0x1	--Count of Thunders
