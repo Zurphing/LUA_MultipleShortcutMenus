@@ -114,23 +114,24 @@ elseif ReadShort(CustomSYSBarID) == 1258 then --GoA ROM Method
 	ZZ0StringOffset = 0x68F8
 	CustomSYSBarOffset = 0x255766E
 	WriteShort(CustomSYSBarOffset, ZZ0StringOffset)
+else CustomTXT = nil
 end
 
 
-	if _readMenu == 0 and ReadByte(CustomTXT) ~= 0x91 then --Change text. 2nd check ensures it isn't written every single frame.
+	if _readMenu == 0 and ReadByte(CustomTXT) ~= 0x91 and CustomTXT ~= nil then --Change text. 2nd check ensures it isn't written every single frame.
 		ConsolePrint(CustomTXT)
 		WriteByte(CustomTXT, 0x91)
 		WriteByte(CustomTXT+0x9, 0xEE)
-	elseif _readMenu == 1 and ReadByte(CustomTXT) ~= 0x92 then
+	elseif _readMenu == 1 and ReadByte(CustomTXT) ~= 0x92 and CustomTXT ~= nil then
 		WriteByte(CustomTXT, 0x92)
 		WriteByte(CustomTXT+0x9, 0xF1)
-	elseif _readMenu == 2 and ReadByte(CustomTXT) ~= 0x93 then
+	elseif _readMenu == 2 and ReadByte(CustomTXT) ~= 0x93 and CustomTXT ~= nil then
 		WriteByte(CustomTXT, 0x93)
 		WriteByte(CustomTXT+0x9, 0xEF)
-	elseif _readMenu == 3 and ReadByte(CustomTXT) ~= 0x94 then
+	elseif _readMenu == 3 and ReadByte(CustomTXT) ~= 0x94 and CustomTXT ~= nil then
 		WriteByte(CustomTXT, 0x94)
 		WriteByte(CustomTXT+0x9, 0xF0)
-	elseif _readMenu == 4 and ReadByte(CustomTXT) ~= 0x95 then
+	elseif _readMenu == 4 and ReadByte(CustomTXT) ~= 0x95 and CustomTXT ~= nil then
 		WriteByte(CustomTXT, 0x95)
 		WriteByte(CustomTXT+0x9, 0xE3)
 	--end
