@@ -134,7 +134,6 @@ end
 	elseif _readMenu == 4 and ReadByte(CustomTXT) ~= 0x95 and CustomTXT ~= nil then
 		WriteByte(CustomTXT, 0x95)
 		WriteByte(CustomTXT+0x9, 0xE3)
-	--end
 	end		
 	
 	
