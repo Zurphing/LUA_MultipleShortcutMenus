@@ -8,3 +8,10 @@
   en: Custom04{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-dpad-left}
 - id: 0x1BE
   en: Custom05{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-r2}
+- id: 0x3B89
+  en: >-
+    Select settings for shortcut commands.
+    
+    {:icon dynamic-left-analog}(L3): Scroll up a shortcut menu.
+    
+    {:icon dynamic-right-analog}(R3): Scroll down a shortcut menu.
