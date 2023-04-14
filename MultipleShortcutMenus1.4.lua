@@ -66,7 +66,7 @@ function _OnFrame()
 	Shortcuts = 0x44625A
 	SaveData = 0x450B62
 	if canExecute == true  then 
-		if ReadByte(FormCheck) ~= 0x03 then
+		if ReadByte(FormCheck) ~= 0x15 then
 		_readMenu = ReadByte(SaveData)
 		_readFlag = ReadShort(MenuFlag)
 	
