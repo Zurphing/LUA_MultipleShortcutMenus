@@ -1,4 +1,4 @@
-- id: 0x1BA
+- id: 0x451
   en: Custom01{:scale 11}{:icon dynamic-l1}{:width 80}+{:icon dynamic-dpad-up}
 - id: 0x3B89
   en: >-
@@ -7,3 +7,10 @@
     {:icon dynamic-left-analog}(L3): Scroll up a shortcut menu.
     
     {:icon dynamic-right-analog}(R3): Scroll down a shortcut menu.
+- id: 0x3713
+  en: >-
+     Change character settings.
+     
+     {:scale 15}{:icon dynamic-r1}+{:icon dynamic-select}: Save all shortcut menus, to load in another save.
+     
+     {:scale 15}{:icon dynamic-l1}+{:icon dynamic-l2}+{:icon dynamic-r1}+{:icon dynamic-r2}+{:icon dynamic-select}: Load a set of shortcut menus.

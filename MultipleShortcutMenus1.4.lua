@@ -11,6 +11,7 @@ local FormCheck = 0x0446086
 
 local SysBarPointer = 0x02A0ED70-0x56454E
 local SysBar = 0x00
+local CustomizeOffset = 0x00
 local CustomSYSBarOffset = 0x00
 local CustomSYSBarID = 0x00
 local CustomTXT = 0x00
@@ -114,44 +115,37 @@ function _OnFrame()
 		end
 
 
---TextSwap method: The "Customize" option in the menu uses a text string whose ID is rather far away. This makes a LUA based text edit incredibly difficult as it's impossible to determine all the permutations of text edit mods a user can use.
---So, we instead swap the offset for the "Customize" option to load. Now, it will load one of the FIRST possible strings in Sys.Bar, the unused World ZZ room names.
---This allows it to effectively "get ahead" of text edits, so that the text will always be the first one in the SYS.Bar, allowing us a guaranteed spot to always edit it.
---Additionally, with pointers, we no longer need to care about offset changes to 03system/00battle/00objentry, preserving mod compatibiltiy.
---GoA text check has been preserved, and is much simpler.
+
+--Text Swap Method: V2.0
+--In SYS.BAR, the offset of where you can find every single string is stored. These offsets obviously exclude the first 0x30 bytes of the file.
+--So, we look in the area of memory where the "Customize" texts offset is located in.
+--This is SysBar+0xA1C. We read this value as a short, and then add it to our SysBar pointer along with 0x30 to compenstae for the header.
+--This will, thus, ALWAYS give us the proper location of our text in memory, no matter where it is. Significantly better method, as we no longer need to rely 
+--on our text being "FIRST" in memory.
 if SysBar == 0 then
 	SysBar = ReadLong(SysBarPointer)
 end
-CustomSYSBarID = ReadShort(SysBar+0xA18, true)
-if CustomSYSBarID == 1105 then 
-	--CustomTXT = ReadByte(SysBar+0x6927, true)
-	ZZ0StringOffset = ReadShort(SysBar+0x3C, true)  --Use this text string instead
-	--CustomSYSBarOffset = ReadShort(SysBar+0xA1C, true)
-	WriteShort(SysBar+0xA1C, ZZ0StringOffset, true)
-	if ZZ0StringOffset == 0x68F8 then 
-		GoAText = 0x8
-	elseif ZZ0StringOffset == 0x68F0 then
-		GoAText = 0x0
-	else GoAText = nil
-	end
-else CustomTXT = nil
-end
+--if CustomizeOffset == 0 then
+--	CustomizeOffset = ReadLong(SysBarPointer)+0xA1C
+--end
 
-if _readMenu == 0 and ReadByte(SysBar+0x6924+0x3+GoAText, true) ~= 0x91 and GoAText ~= nil then --Change text. 2nd check ensures it isn't written every single frame.
-	WriteByte(SysBar+0x6924+0x3+GoAText, 0x91, true)
-	WriteByte(SysBar+0x6924 + 0xC+GoAText, 0xEE, true)
-elseif _readMenu == 1 and ReadByte(SysBar+0x6924+0x3+GoAText, true) ~= 0x92 and GoAText ~= nil then
-	WriteByte(SysBar+0x6924+0x3+GoAText, 0x92, true)
-	WriteByte(SysBar+0x6924 + 0xC+GoAText, 0xF1, true)
-elseif _readMenu == 2 and ReadByte(SysBar+0x6924+0x3+GoAText, true) ~= 0x93 and GoAText ~= nil then
-	WriteByte(SysBar+0x6924+0x3+GoAText, 0x93, true)
-	WriteByte(SysBar+0x6924 + 0xC+GoAText, 0xEF, true)
-elseif _readMenu == 3 and ReadByte(SysBar+0x6924+0x3+GoAText, true) ~= 0x94 and GoAText ~= nil then
-	WriteByte(SysBar+0x6924+0x3+GoAText, 0x94, true)
-	WriteByte(SysBar+0x6924 + 0xC+GoAText, 0xF0, true)
-elseif _readMenu == 4 and ReadByte(SysBar+0x6924+0x3+GoAText, true) ~= 0x95 and GoAText ~= nil then
-	WriteByte(SysBar+0x6924+0x3+GoAText, 0x95, true)
-	WriteByte(SysBar+0x6924 + 0xC+GoAText, 0xE3, true)
+if _readMenu == 0 and ReadByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), true) ~= 0x91 then --Change text. 2nd check ensures it isn't written every single frame.
+	WriteByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0x91, true)
+	WriteByte(SysBar+0x30+0x10+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0xEE, true)
+elseif _readMenu == 1 and ReadByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), true) ~= 0x92 then
+	WriteByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0x92, true)
+	WriteByte(SysBar+0x30+0x10+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0xF1, true)
+elseif _readMenu == 2 and ReadByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), true) ~= 0x93 then
+	WriteByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0x93, true)
+	WriteByte(SysBar+0x30+0x10+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0xEF, true)
+elseif _readMenu == 3 and ReadByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), true) ~= 0x94 then
+	WriteByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0x94, true)
+	WriteByte(SysBar+0x30+0x10+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0xF0, true)
+elseif _readMenu == 4 and ReadByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), true) ~= 0x95 then
+	WriteByte(SysBar+0x30+0x7+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0x95, true)
+	WriteByte(SysBar+0x30+0x10+ReadShort(ReadLong(SysBarPointer)+0xA1C, true), 0xE3, true)
+
+
 end	
 
 end
